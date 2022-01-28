@@ -15,7 +15,7 @@ export default function App() {
   const [savedText, saveNewText] = useState();
   const [isNoteOpen, setNoteOpen] = useState(false);
   const [isInfoOpen, setInfoOpen] = useState(false);
-  const [keyReferences, newKeyRef] = useState([])
+  const [header, setHeader] = useState(['For your diary needs'])
 
 const firebaseConfig = {
   apiKey: "API_KEY",
@@ -41,6 +41,7 @@ set(newNoteRef, {
   }
 const removeTextItem = (textID) => {
     saveNewText(savedText=>{
+      console.log(textID)
       return savedText.filter((textItem) => textItem.id !== textID)
     })
   }
@@ -52,18 +53,15 @@ const cancelTyping = () =>{
 const closeInfo = () =>{
   setInfoOpen(false);
 }
-const getNotesFromApi = () => {
-  /*const starCountRef = ref(database, 'dailyNotes');
+const getHeaderFromApi = () => {
+  const starCountRef = ref(database, 'dailyHeader');
   onValue(starCountRef, (snapshot) => {
-    const notesFromDb = snapshot.val();
-    console.log(notesFromDb[savedText.length])
-    console.log(savedText)
-    const id=savedText.length
-    const noteIntoState = notesFromDb.note
-    saveNewText([...savedText, {noteIntoState, id}])
-    console.log('state '+savedText)
-    console.log(notesFromDb)
-  });*/console.log(savedText);
+    const head = snapshot.val();
+    console.log(head)
+    setHeader(head);
+    ;
+  })
+  
 };
 /*function getNotesFromApi2() {
 const dbRef = ref(database, '/dailyNotes');
@@ -92,30 +90,28 @@ onValue(dbRef, (snapshot) => {
 
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.buttonMargin}>
+      <View style={styles.buttonMargin} header={header}>
       <NoteHeader style={styles.headerFront}/>
       <Button title="Open note editor" onPress={() => setNoteOpen(true)}/>
-      <Button title="Refresh entries" onPress={() => getNotesFromApi()}/>
+      <Button title="Refresh entries" onPress={() => getHeaderFromApi()}/>
       <Button title="Open info" onPress={() => setInfoOpen(true)}/>
       </View>
     <InfoScreen infoVisible={isInfoOpen} closeInfoScreen={closeInfo}/>
     <UserInput noteVisible={isNoteOpen} addTextProp={textHandler} cancelProp={cancelTyping}closeNote={cancelTyping}/>
     <Text>Tap on a note to delete it.</Text>
     <Text style={styles.separator}>Your notes are displayed below this.</Text>
-    <View>
+   
     <FlatList 
     style={styles.flatContainer}
     keyGetter={(item)=> item.id}
     data={savedText}
-    horizontal={false}
-    numColumns={2}
     renderItem={({item})=>(
       
       <TextItem key={item.id}
       data={item}
       onDeleteItem={removeTextItem}/>
       
-    )}/></View>
+    )}/>
 
     </View>
     

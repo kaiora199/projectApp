@@ -4,9 +4,7 @@ import {View, Text, StyleSheet, Image} from 'react-native';
 const NoteHeader = props =>{
     return( 
     <View style={styles.HeaderStyle}>
-              <Image style={styles.imageHeader}
-      source={require('../assets/appLogo.png')}
-      />
+              
       <Text style={styles.headerText}>For your diary needs</Text>
     </View> 
   )

@@ -4,7 +4,6 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 
 const TextItem = props =>{
-  console.log(props.data)
     return( 
     <TouchableOpacity onPress={props.onDeleteItem}>
     <View style={styles.textContainer}>
