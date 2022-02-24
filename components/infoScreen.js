@@ -9,6 +9,7 @@ const InfoScreen = props =>{
         <Text>This is a React Native app created by Kai Oraviita.</Text>
         <Text>This apps key features are: Notekeeping and passing time.</Text>
         <Text>You can close this view by pressing this info bubble.</Text>
+        <Text>This project was created using React Native and Googles Realtime database</Text>
     </View>
     </TouchableOpacity>
     </Modal>

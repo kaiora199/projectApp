@@ -5,7 +5,7 @@ const NoteHeader = props =>{
     return( 
     <View style={styles.HeaderStyle}>
               
-      <Text style={styles.headerText}>For your diary needs</Text>
+      <Text style={styles.headerText}>{props.data}</Text>
     </View> 
   )
 };

@@ -10,12 +10,17 @@ import InfoScreen from './components/infoScreen';
 import NoteHeader from './components/noteHeader'
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, onValue, child, get, orderByChild, push, onChildAdded} from "firebase/database";
+import UserInputHeader from './components/headerInput'
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function App() {
   const [savedText, saveNewText] = useState();
   const [isNoteOpen, setNoteOpen] = useState(false);
+  const [reguiresLogIn, setLoggedIn] = useState(true);
+  const [isHeadNoteOpen, setNewHead] = useState(false);
   const [isInfoOpen, setInfoOpen] = useState(false);
-  const [header, setHeader] = useState(['For your diary needs'])
+  const [header, setHeader] = useState([''])
+  const [users, newUser]= useState([])
 
 const firebaseConfig = {
   apiKey: "API_KEY",
@@ -39,22 +44,33 @@ set(newNoteRef, {
   note: textData
 });
   }
-const removeTextItem = (textID) => {
+
+  const textHandlerHeader = (textData) =>{
+    const headListRef = ref(database, 'dailyHeader');
+    set(headListRef, {
+      header:textData
+    });
+      }
+const removeTextItem = (textItem) => {
     saveNewText(savedText=>{
-      console.log(textID)
-      return savedText.filter((textItem) => textItem.id !== textID)
+      console.log(textItem)
+      return savedText.filter((textItem) => textItem.id !== textItem.id)
     })
   }
 const cancelTyping = () =>{
     setNoteOpen(false);
+    setNewHead(false)
 }
 
 
 const closeInfo = () =>{
   setInfoOpen(false);
 }
+const closeLoginScreen = () =>{
+  setLoggedIn(false)
+}
 const getHeaderFromApi = () => {
-  const starCountRef = ref(database, 'dailyHeader');
+  const starCountRef = ref(database, 'dailyHeader/header');
   onValue(starCountRef, (snapshot) => {
     const head = snapshot.val();
     console.log(head)
@@ -84,21 +100,24 @@ onValue(dbRef, (snapshot) => {
         diaryList.push(theseDiaryNotes[i].note)
       }
       saveNewText(diaryList)
+      setHeader('For your diary needs')
+
     })
   },[]
   )
 
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.buttonMargin} header={header}>
-      <NoteHeader style={styles.headerFront}/>
+      <View style={styles.buttonMargin}>
+      <NoteHeader style={styles.headerFront} data={header}/>
       <Button title="Open note editor" onPress={() => setNoteOpen(true)}/>
-      <Button title="Refresh entries" onPress={() => getHeaderFromApi()}/>
+      <Button title="Open header editor" onPress={() => setNewHead(true)}/>
+      <Button title="Refresh your header" onPress={() => getHeaderFromApi()}/>
       <Button title="Open info" onPress={() => setInfoOpen(true)}/>
       </View>
     <InfoScreen infoVisible={isInfoOpen} closeInfoScreen={closeInfo}/>
     <UserInput noteVisible={isNoteOpen} addTextProp={textHandler} cancelProp={cancelTyping}closeNote={cancelTyping}/>
-    <Text>Tap on a note to delete it.</Text>
+    <UserInputHeader headNoteVisible={isHeadNoteOpen} addTextProp={textHandlerHeader} cancelProp={cancelTyping}closeNote={cancelTyping}/>
     <Text style={styles.separator}>Your notes are displayed below this.</Text>
    
     <FlatList 
@@ -108,8 +127,7 @@ onValue(dbRef, (snapshot) => {
     renderItem={({item})=>(
       
       <TextItem key={item.id}
-      data={item}
-      onDeleteItem={removeTextItem}/>
+      data={item}/>
       
     )}/>
 
